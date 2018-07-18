@@ -11,7 +11,7 @@ const app = new Express();
 mongoose
   .connect(local.dbUri, { useNewUrlParser: true })
   .then(() => console.log('MongodDB is connected'))
-  .catch(err => console.log(err));
+  .catch(err => console.error(err));
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());

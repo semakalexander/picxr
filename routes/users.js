@@ -17,6 +17,24 @@ router.get('/', (req, res) => {
     .catch(err => res.status(400).json(err));
 });
 
+// @route  api/users/:id
+// @desc   get user by id
+// @access public
+router.get('/:id', (req, res) => {
+  const { id } = req.params;
+
+  User
+    .findById(id)
+    .then(record => {
+      if (!record) {
+        return res.status(404).json({ error: 'There is no user with this id' });
+      }
+
+      return res.json(record);
+    })
+    .catch(() => res.status(404).json({ error: 'There is no user with this id' }));
+});
+
 // @route  api/users
 // @desc   create user
 // @access public
