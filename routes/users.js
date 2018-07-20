@@ -171,4 +171,85 @@ router.post('/sign-in', (req, res) => {
     });
 });
 
+// @route api/users/:followingUserId/follow
+// @desc follow user with followingUserId
+// @access private
+router.patch(
+  '/:followingUserId/follow',
+  passport.authenticate('jwt', { session: false }),
+  (req, res) => {
+    const { id: currentUserId } = req.user;
+    const { followingUserId } = req.params;
+
+    User
+      .findById(followingUserId)
+      .then(followingUserRecord => {
+        if (!followingUserRecord) {
+          res.status(400).json({
+            error: {
+              id: `There is no user with id "${followingUserId}"`
+            }
+          });
+        }
+
+        return User.update({ _id: currentUserId }, {
+          $addToSet: {
+            followers: followingUserId
+          }
+        });
+      })
+      .then(() =>
+        User.update({ _id: followingUserId }, {
+          $addToSet: {
+            following: currentUserId
+          }
+        }))
+      .then(result => res.json(result))
+      .catch(error => {
+        console.error(error);
+        res.status(500).json({ error });
+      });
+  }
+);
+
+// @route api/users/:followingUserId/unfollow
+// @desc unfollow user with followingUserId
+// @access private
+router.patch(
+  '/:followingUserId/unfollow',
+  passport.authenticate('jwt', { session: false }),
+  (req, res) => {
+    const { id: currentUserId } = req.user;
+    const { followingUserId } = req.params;
+
+    User
+      .findById(followingUserId)
+      .then(followingUserRecord => {
+        if (!followingUserRecord) {
+          res.status(400).json({
+            error: {
+              id: `There is no user with id "${followingUserId}"`
+            }
+          });
+        }
+
+        return User.update({ _id: currentUserId }, {
+          $pull: {
+            followers: followingUserId
+          }
+        });
+      })
+      .then(() =>
+        User.update({ _id: followingUserId }, {
+          $pull: {
+            following: currentUserId
+          }
+        }))
+      .then(result => res.json(result))
+      .catch(error => {
+        console.error(error);
+        res.status(500).json({ error });
+      });
+  }
+);
 module.exports = router;
