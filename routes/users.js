@@ -1,6 +1,7 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const passport = require('passport');
 
 const User = require('../models/User');
 
@@ -10,6 +11,7 @@ const keys = require('../config/keys');
 
 const router = express.Router();
 
+
 // @route  api/users
 // @desc   get all users
 // @access public
@@ -18,24 +20,6 @@ router.get('/', (req, res) => {
     .find()
     .then(users => res.json(users))
     .catch(err => res.status(400).json(err));
-});
-
-// @route  api/users/:id
-// @desc   get user by id
-// @access public
-router.get('/:id', (req, res) => {
-  const { id } = req.params;
-
-  User
-    .findById(id)
-    .then(record => {
-      if (!record) {
-        return res.status(404).json({ error: 'There is no user with this id' });
-      }
-
-      return res.json(record);
-    })
-    .catch(() => res.status(404).json({ error: 'There is no user with this id' }));
 });
 
 // @route  api/users
@@ -83,6 +67,42 @@ router.post('/', (req, res) => {
       console.error(err);
       res.status(500).json(err);
     });
+});
+
+
+// @route  api/users/current
+// @desc   get current user
+// @access private
+router.get(
+  '/current',
+  passport.authenticate('jwt', { session: false }),
+  (req, res) => {
+    const { id, name, email } = req.user;
+
+    res.json({
+      id,
+      name,
+      email
+    });
+  }
+);
+
+// @route  api/users/:id
+// @desc   get user by id
+// @access public
+router.get('/:id', (req, res) => {
+  const { id } = req.params;
+
+  User
+    .findById(id)
+    .then(record => {
+      if (!record) {
+        return res.status(404).json({ error: 'There is no user with this id' });
+      }
+
+      return res.json(record);
+    })
+    .catch(() => res.status(404).json({ error: 'There is no user with this id' }));
 });
 
 
