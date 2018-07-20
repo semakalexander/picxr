@@ -17,6 +17,17 @@ const validateSignup = ({ username, email, password }) => {
   return reduceValidations(values);
 };
 
+const validateSignIn = ({ username, password }) => {
+  const values = {};
+
+  values.username = validateUsername(username);
+
+  values.password = validatePassword(password);
+
+  return reduceValidations(values);
+};
+
 module.exports = {
-  validateSignup
+  validateSignup,
+  validateSignIn
 };
