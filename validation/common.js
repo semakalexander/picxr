@@ -14,9 +14,9 @@ const reduceValidations = values =>
 const validateUsername = (value = '') => {
   const username = value.trim();
 
-  if (!/^([a-z]|[A-Z])\w{1,21}([a-z]|[A-Z])$/.test(username)) {
+  if (!/^([a-z]|[A-Z])[\w-]{1,21}([A-z\d])$/.test(username)) {
     return {
-      error: 'Username must be a word, contains only letters, numbers or underscore. Length must be between 3 and 22 symbols. First and last symbols must be letters'
+      error: 'Username must be a word, contains only mix of letters/digits/underscores/hyphens. Length must be between 3 and 22 symbols. The password can starts only with letter and ends with letter/digit'
     };
   }
 
@@ -47,9 +47,26 @@ const validatePassword = (value = '') => {
   return password;
 };
 
+const validateEmailOrUsername = (value = '') => {
+  const emailOrUsername = value.trim();
+
+  const email = validateEmail(emailOrUsername);
+
+  const username = validateUsername(emailOrUsername);
+
+  if (email.error && username.error) {
+    return {
+      error: 'Provided value neither correct email address nor username.'
+    };
+  }
+
+  return email.error ? username : email;
+}
+
 module.exports = {
   reduceValidations,
   validateUsername,
   validateEmail,
-  validatePassword
+  validatePassword,
+  validateEmailOrUsername
 };

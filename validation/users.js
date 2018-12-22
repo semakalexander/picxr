@@ -2,6 +2,7 @@ const {
   validateUsername,
   validateEmail,
   validatePassword,
+  validateEmailOrUsername,
   reduceValidations
 } = require('./common');
 
@@ -17,10 +18,10 @@ const validateSignup = ({ username, email, password }) => {
   return reduceValidations(values);
 };
 
-const validateSignIn = ({ username, password }) => {
+const validateSignIn = ({ emailOrUsername, password }) => {
   const values = {};
 
-  values.username = validateUsername(username);
+  values.emailOrUsername = validateEmailOrUsername(emailOrUsername);
 
   values.password = validatePassword(password);
 

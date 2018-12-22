@@ -1,6 +1,8 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
+const helper = require('../helpers/common');
+
 const User = require('../models/User');
 
 const { validateSignup, validateSignIn } = require('../validation/users');
@@ -88,7 +90,7 @@ const createUser = (req, res) => {
       values.password = hash;
       return new User(values).save();
     })
-    .then(record => res.json(record))
+    .then(record => res.status(200).json(helper.omit(record.toObject(), 'password')))
     .catch(err => {
       console.error(err);
       res.status(500).json(err);
@@ -99,21 +101,21 @@ const createUser = (req, res) => {
 // @desc sign in
 // @access public
 const signIn = (req, res) => {
-  const { username, password } = req.body;
+  const { emailOrUsername, password } = req.body;
 
-  const values = validateSignIn({ username, password });
+  const values = validateSignIn({ emailOrUsername, password });
 
   if (values.error) {
     return res.status(400).json(values);
   }
 
   User
-    .findOne({ username })
+    .findOne({ $or: [{ username: emailOrUsername }, { email: emailOrUsername }] })
     .then(user => {
       if (!user) {
-        return res.json({
+        return res.status(400).json({
           error: {
-            email: 'There is no user with this username'
+            emailOrUsername: 'There is no user with this email/username'
           }
         });
       }
@@ -130,7 +132,7 @@ const signIn = (req, res) => {
 
           const payload = {
             id: user.id,
-            name: user.name,
+            username: user.username,
           };
 
           jwt.sign(
@@ -146,8 +148,7 @@ const signIn = (req, res) => {
                 token: `Bearer ${token}`,
                 user: {
                   email: user.email,
-                  name: user.name,
-                  avatar: user.avatar
+                  username: user.username
                 }
               });
             }
