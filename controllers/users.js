@@ -13,10 +13,33 @@ const keys = require('../config/keys');
 // @desc   get all users
 // @access public
 const getUsers = (req, res) => {
-  User
-    .find()
-    .then(users => res.json(users))
-    .catch(err => res.status(400).json(err));
+  let {
+    query: {
+      page = 0,
+      perPage = 10,
+      sortOrder = 'asc',
+      sortBy = 'username'
+    }
+  } = req;
+
+  if (Number.isNaN(page)) page = 0;
+  if (Number.isNaN(perPage)) perPage = 10;
+  if (!sortOrder) sortOrder = 'asc';
+  if (!sortBy) sortBy = 'username';
+
+  Promise.all([
+    User.count(),
+    User
+      .find()
+      .skip(page * perPage)
+      .limit(+perPage)
+      .sort({ [sortBy]: sortOrder.toLowerCase() })
+  ])
+    .then(([count, users]) => res.json({
+      users: users.map(u => helper.omit(u.toObject(), 'password')),
+      count
+    }))
+    .catch(err => res.status(500).json(err));
 };
 
 // @route  api/users/:id
@@ -144,12 +167,9 @@ const signIn = (req, res) => {
                 throw err;
               }
 
-              res.json({
+              return res.json({
                 token: `Bearer ${token}`,
-                user: {
-                  email: user.email,
-                  username: user.username
-                }
+                user: helper.omit(user.toObject(), 'password')
               });
             }
           );
