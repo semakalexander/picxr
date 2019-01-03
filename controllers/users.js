@@ -255,6 +255,15 @@ const unfollow = (req, res) => {
     });
 };
 
+const remove = (req, res) => {
+  const { id } = req.params;
+
+  User
+    .findByIdAndDelete(id)
+    .then(() => res.json({ ok: true }))
+    .catch(error => res.status(500).json(error));
+};
+
 module.exports = {
   getUsers,
   getUserById,
@@ -262,5 +271,6 @@ module.exports = {
   createUser,
   signIn,
   follow,
-  unfollow
+  unfollow,
+  remove
 };
