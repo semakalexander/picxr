@@ -64,11 +64,11 @@ const getUserById = (req, res) => {
 // @desc   get current user
 // @access private
 const getCurrentUser = (req, res) => {
-  const { id, name, email } = req.user;
+  const { id, username, email } = req.user;
 
   res.json({
     id,
-    name,
+    username,
     email
   });
 };
