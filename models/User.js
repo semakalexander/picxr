@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const ROLES = require('../constants/userRoles');
 
 const { Schema } = mongoose;
 
@@ -10,7 +11,8 @@ const schema = new Schema({
   avatar: { type: String },
   createdAt: { type: Date, default: Date.now() },
   followers: [Schema.Types.ObjectId],
-  following: [Schema.Types.ObjectId]
+  following: [Schema.Types.ObjectId],
+  role: { type: String, required: true, default: ROLES.USER }
 }, { versionKey: false });
 
 module.exports = mongoose.model('users', schema);

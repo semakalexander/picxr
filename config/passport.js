@@ -1,5 +1,6 @@
 const passportJwt = require('passport-jwt');
 const mongoose = require('mongoose');
+const ROLES = require('../constants/userRoles');
 
 const {
   Strategy,
@@ -16,16 +17,26 @@ const options = {
 };
 
 module.exports = passport => {
-  passport.use(
-    new Strategy(options, (jwtPayload, done) => {
-      User.findById(jwtPayload.id)
-        .then(user => {
-          if (user) {
-            return done(null, user);
-          }
-          return done(null, false);
-        })
-        .catch(err => console.error(err));
-    })
-  );
+  passport.use('user', new Strategy(options, (jwtPayload, done) => {
+    User.findById(jwtPayload.id)
+      .then(user => {
+        if (user) {
+          return done(null, user);
+        }
+        return done(null, false);
+      })
+      .catch(err => console.error(err));
+  }));
+
+  passport.use('admin', new Strategy(options, (jwtPayload, done) => {
+    User.findById(jwtPayload.id)
+      .then(user => {
+        if (user && user.role === ROLES.ADMIN) {
+          return done(null, user);
+        }
+
+        return done(null, false);
+      })
+      .catch(err => console.error(err));
+  }));
 };
