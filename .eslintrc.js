@@ -7,6 +7,6 @@ module.exports = {
         "no-confusing-arrow": 0,
         "implicit-arrow-linebreak": 0,
         "operator-linebreak": 0,
-        "no-console": ["warn", { allow: ["warn", "error"] }]
+        "no-console": 0
     }
 };

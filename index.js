@@ -7,14 +7,16 @@ const cors = require('cors');
 const keys = require('./config/keys');
 const routes = require('./routes/index');
 
-
 const passportConfig = require('./config/passport');
+
+const setup = require('./setup');
 
 const PORT = process.env.PORT || 9000;
 
 mongoose
   .connect(keys.dbUri, { useNewUrlParser: true })
   .then(() => console.log('MongodDB is connected'))
+  .then(setup.createAdmin)
   .catch(err => console.error(err));
 
 
