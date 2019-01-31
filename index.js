@@ -17,6 +17,7 @@ mongoose
   .connect(keys.dbUri, { useNewUrlParser: true })
   .then(() => console.log('MongodDB is connected'))
   .then(setup.createAdmin)
+  // .then(setup.createUsers)
   .catch(err => console.error(err));
 
 

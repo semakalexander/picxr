@@ -4,6 +4,11 @@ const User = require('./models/User');
 const keys = require('./config/keys');
 const USER_ROLES = require('./constants/userRoles');
 
+const usernames = [
+  'angel', 'bubbles', 'shimmer', 'angelic', 'bubbly', 'glimmer', 'baby', 'pink', 'little', 'butterfly', 'sparkly', 'doll', 'sweet', 'sparkles', 'dolly', 'sweetie', 'sprinkles', 'lolly', 'princess', 'fairy', 'honey', 'snowflake', 'pretty', 'sugar', 'cherub', 'lovely', 'blossom',
+  'bandalls', 'wattlexp', 'sweetiele', 'hyperYauFarer', 'editussion', 'experthead', 'flamesbria', 'heroAnhart', 'liveltekah', 'linguss', 'interestec', 'fuzzySpuffy', 'monsterup', 'milkA1Baby', 'lovesBoost', 'edgymnerch', 'ortspoon', 'oranolio', 'oneMama', 'dravenfact', 'reallychel', 'reakefit', 'popularkiya', 'breacche', 'blikimore', 'stoneWellForever', 'simmson', 'brightHulk', 'bootecia', 'spuffyffet', 'rozalthiric', 'bookman'
+];
+
 module.exports = {
   createAdmin: () => {
     User
@@ -24,11 +29,22 @@ module.exports = {
               new User({
                 ...values,
                 password: hash
-              }).save()
-            )
+              }).save())
             .then(() => console.log('super admin was successfully created.'));
         }
       })
       .catch(err => console.error(err));
+  },
+  createUsers: () => {
+    const users = usernames.map(username => new User({
+      username,
+      password: username,
+      email: `${username}@gmail.com`,
+      role: 'user'
+    }));
+
+    Promise.all(
+      users.map(u => u.save())
+    ).then(() => console.log('users were created.'));
   }
 };
