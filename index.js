@@ -31,6 +31,8 @@ app.use(bodyParser.json());
 app.use(passport.initialize());
 passportConfig(passport);
 
-app.use('/api/', routes);
+app.use('/static', Express.static('static'));
+
+app.use('/api', routes);
 
 app.listen(PORT, () => console.log(`Server successfully started at http://localhost:${PORT}/`));
