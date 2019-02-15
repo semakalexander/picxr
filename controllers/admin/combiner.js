@@ -5,7 +5,6 @@ const fs = require('fs');
 // @access private // admin
 const saveBackgroundImage = (req, res) => {
   fs.writeFile('./static/images/background-image.png', req.file.buffer, (err, result) => {
-    console.log(req.file);
     if (err) {
       console.log(err);
       res.status(500).json(err);
